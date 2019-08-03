@@ -25,26 +25,4 @@ export function scope_old () :void {
 	node_names = NODE_NAMES;
 }
 
-export var Node :never;
-export type Node = object & {
-	
-	name :string
-	kind :string
-	type :string
-	start :number
-	end :number
-	
-	id :Node
-	left :Node
-	value :Node | null
-	local :Node
-	param :Node
-	handler :Node | null
-	argument :Node
-	
-	params :Node[]
-	elements :( Node | null )[]
-	properties :Node[]
-	declarations :Node[]
-	
-};
+type Node = import('./default').Node;

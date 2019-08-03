@@ -1,11 +1,11 @@
 import create from '.Object.create';
 import assign from '.Object.assign';
 
-import { scope_has, Node } from './Node';
+import { scope_has } from './scope';
 
 const isFunction = ({ type } :Node) :boolean => type==='FunctionExpression' || type==='FunctionDeclaration';
 
-export default function ReferenceVisitors (globals :Globals) {
+export default function ReferenceVisitors (globals :{ add (node :Node) :void }) {
 	
 	function Name (node :Node, parents :Node[]) :void {
 		const { name } :Node = node;
@@ -37,4 +37,4 @@ export default function ReferenceVisitors (globals :Globals) {
 	
 };
 
-type Globals = { add (node :Node) :void };
+type Node = import('./default').Node;

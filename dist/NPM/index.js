@@ -1,8 +1,10 @@
 ﻿'use strict';
 
-const version = '1.0.0';
+const version = '1.0.1';
 
 const push = Array.prototype.push;
+
+const apply = Reflect.apply;
 
 const NODE_NAMES                             = new WeakMap;
 let node_names                             = NODE_NAMES;
@@ -147,7 +149,7 @@ function DeclarationVisitors (ast      ) {
 
 const isFunction = ({ type }      )          => type==='FunctionExpression' || type==='FunctionDeclaration';
 
-function ReferenceVisitors (globals         ) {
+function ReferenceVisitors (globals                            ) {
 	
 	function Name (node      , parents        )       {
 		const { name }       = node;
@@ -177,45 +179,6 @@ function ReferenceVisitors (globals         ) {
 		},
 	});
 	
-}
-
-const { ancestor, base } = require('acorn-walk');
-if ( !base.FieldDefinition ) {
-	base.FieldDefinition = function (node     , st     , c     )       {
-		if ( node.computed ) { c(node.key, st, 'Expression'); }
-		const { value }       = node;
-		if ( value ) { c(value, st, 'Expression'); }
-	};
-}
-
-class Globals extends Map                 {
-	add (node      )       {
-		const name         = node.type==='ThisExpression' ? 'this' : node.name;
-		const nodes                     = this.get(name);
-		if ( nodes ) { nodes.push(node); }
-		else { this.set(name, [ node ]); }
-	}
-	names ()           {
-		return [ ...this.keys() ];
-	}
-	nodes ()         {
-		const nodes         = [];
-		for ( const value of this.values() ) {
-			push.apply(nodes, value);
-		}
-		return nodes;
-	}
-}
-
-function find (ast                )          {
-	scope_new();
-	try {
-		const globals          = new Globals;
-		ancestor(ast, DeclarationVisitors(ast));
-		ancestor(ast, ReferenceVisitors(globals));
-		return globals;
-	}
-	finally { scope_old(); }
 }
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -248,10 +211,45 @@ const Default = (
 	/*¡ j-globals: default (internal) */
 );
 
-const _default = Default(find, {
-	version,
-	find,
-});
+const { ancestor, base } = require('acorn-walk');
+if ( !base.FieldDefinition ) {
+	base.FieldDefinition = function (node     , st     , c     )       {
+		if ( node.computed ) { c(node.key, st, 'Expression'); }
+		const { value }       = node;
+		if ( value ) { c(value, st, 'Expression'); }
+	};
+}
+
+class Globals extends Map                 {
+	add (node      )       {
+		const name         = node.type==='ThisExpression' ? 'this' : node.name;
+		const nodes                     = this.get(name);
+		if ( nodes ) { nodes.push(node); }
+		else { this.set(name, [ node ]); }
+	}
+	names ()           {
+		return [ ...this.keys() ];
+	}
+	nodes ()         {
+		const nodes         = [];
+		for ( const value of this.values() ) {
+			apply(push, nodes, value);
+		}
+		return nodes;
+	}
+}
+
+function findGlobals (ast                )          {
+	scope_new();
+	try {
+		const globals          = new Globals;
+		ancestor(ast, DeclarationVisitors(ast));
+		ancestor(ast, ReferenceVisitors(globals));
+		return globals;
+	}
+	finally { scope_old(); }
+}
+const _default = Default(findGlobals, { version });
 
 module.exports = _default;
 

@@ -2,7 +2,7 @@ import create from '.Object.create';
 import assign from '.Object.assign';
 import Error from '.Error';
 
-import { scope_add, Node } from './Node';
+import { scope_add } from './scope';
 
 const isBigScope = (type :string) :boolean => type==='FunctionDeclaration' || type==='FunctionExpression' || type==='ArrowFunctionExpression' || type==='Program';
 const isAnyScope = (type :string) :boolean => type==='BlockStatement' || isBigScope(type);
@@ -117,3 +117,5 @@ export default function DeclarationVisitors (ast :Node) {
 		ImportNamespaceSpecifier: Import,
 	});
 };
+
+type Node = import('./default').Node;

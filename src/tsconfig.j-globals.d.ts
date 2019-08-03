@@ -12,6 +12,8 @@ declare module '.Object.freeze' { export default Object.freeze; }
 declare module '.Object.prototype.hasOwnProperty' { export default Object.prototype.hasOwnProperty; }
 declare module '.Object.seal' { export default Object.seal; }
 
+declare module '.Reflect.apply' { export default Reflect.apply; }
+
 declare module '.Set' { export default Set; }
 
 declare module '.Symbol.toStringTag?' { export default Symbol.toStringTag; }
