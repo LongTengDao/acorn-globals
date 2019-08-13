@@ -7,7 +7,7 @@
 Important Notes
 ---------------
 
-This package is adapted from [`acorn-globals@4.3.3`](https://www.npmjs.org/package/acorn-globals).
+This package is adapted from [`acorn-globals@4.3.4`].
 
 When I found improvable things in use, I submitted some PR for to improve it together.
 
@@ -18,24 +18,34 @@ The major difference is that `acorn-globals` automatically ignores references to
 Other differences
 -----------------
 
-1.  Reduce the API: The the main export function only accepts the parsed `ast` parameter, not the `string` and `options` parameters, and `parse` method function export is removed, because users will extend different grammar plug-ins to `acorn`'s Parser in different cases.
+1.  License: From `MIT` to `LGPL-3.0`, almost same unlimited for using, while the difference is that if the package itself is modified, it must be released as open source with the same license.
     
-2.  Parameter Read-Only: No modification of `ast` parameter (`acorn-globals` modified the `locals` and `parents` properties of nodes).
+2.  Host Requirement: Because it is a back-end package, it uses ES 6+ feature.
     
-3.  Return Value: The return value is changed from `{ name :string, nodes :Node[] }[]` to `Map<string, Node[]> & { names (): string[], nodes () :Node[] }`.
+3.  Reduce the API: The the main export function only accepts the parsed `AST` as argument, not the `code` and `options` arguments, and no `parse` method exported. Because users may use different versions and grammar plug-ins with different `options` in different cases.
     
 4.  Dependency Extension: The `base.FieldDefinition` of the dependency package `acorn-walk` is extended to support the `acorn-class-fields` and `acorn-static-class-features` grammar plug-ins which are still in stage 3.
     
-5.  Host Requirement: Because it is a back-end package, it uses ES 6+ feature.
+5.  Parameter Read-Only: No modification of `AST` argument (`acorn-globals` modified the `locals` and `parents` properties of nodes).
     
-6.  License: From `MIT` to `LGPL-3.0`, almost same unlimited for using, while the difference is that if the package itself is modified, it must be released as open source with the same license.
+6.  Return Value: The return value is changed from `{ name :string, nodes :Node[] }[]` to `Map<string, Node[]> & { names (): string[], nodes () :Node[] }`.
+
+```ts
+const find = require('@ltd/acorn-globals');
+
+const AST = require('acorn').Parser/*.extend(plugin)*/.parse(code/*, options*/);
+
+const globals = find(AST);
+
+globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
+```
 
 [English](#user-content-en) | [**简体中文**](#user-content-zhs)<a id="user-content-zhs">&nbsp;</a>
 
 重要说明
 --------
 
-这个包改编自 [`acorn-globals@4.3.3`](https://www.npmjs.org/package/acorn-globals)。
+这个包改编自 [`acorn-globals@4.3.4`]。
 
 我在使用中发现可以改进的地方时，都第一时间提交了 PR 以共同完善。
 
@@ -46,14 +56,26 @@ Other differences
 其它不同
 --------
 
-1.  缩小接口：模块主导出函数只接受解析后的 `ast` 参数，不接受 `string` 和 `options` 参数，同时取消导出 `parse` 方法函数，因为不同场景下用户会对 `acorn` 的 `Parser` 扩展不同的语法插件。
+1.  许可协议：从 `MIT` 变为 `LGPL-3.0`，使用上一样，几乎就是没限制，主要区别是如果对包本身进行了改造，则必须以同样许可协议开源发布。
     
-2.  参数只读：不对 `ast` 参数作修改（`acorn-globals` 中修改了节点的 `locals` 和 `parents` 属性）。
+2.  宿主要求：由于是后端用包，使用了 ES 6 以上的特性。
     
-3.  返回形式：返回值从 `{ name :string, nodes :Node[] }[]` 改为 `Map<string, Node[]> & { names () :string[], nodes () :Node[] }`。
+3.  缩小接口：模块主导出函数只接受解析后的 `AST` 作为参数，而不接受 `code` 和 `options`，同时取消导出 `parse` 方法函数，以满足用户对不同 `acorn` 版本、语法插件、`options` 的需求。
     
 4.  依赖扩展：扩展了依赖包 `acorn-walk` 的 `.base.FieldDefinition`，用于支持尚处于 stage 3 的 `acorn-class-fields`、`acorn-static-class-features` 语法插件。
     
-5.  宿主要求：由于是后端用包，使用了 ES 6 以上的特性。
+5.  参数只读：不对 `AST` 参数作修改（`acorn-globals` 中修改了节点的 `locals` 和 `parents` 属性）。
     
-6.  许可协议：从 `MIT` 变为 `LGPL-3.0`，使用上一样，几乎就是没限制，主要区别是如果对包本身进行了改造，则必须以同样许可协议开源发布。
+6.  返回形式：返回值从 `{ name :string, nodes :Node[] }[]` 改为 `Map<string, Node[]> & { names () :string[], nodes () :Node[] }`。
+
+```ts
+const find = require('@ltd/acorn-globals');
+
+const AST = require('acorn').Parser/*.extend(plugin)*/.parse(code/*, options*/);
+
+const globals = find(AST);
+
+globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
+```
+
+[`acorn-globals@4.3.3`]: https://www.npmjs.org/package/acorn-globals

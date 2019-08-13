@@ -7,19 +7,19 @@ const isFunction = ({ type } :Node) :boolean => type==='FunctionExpression' || t
 
 export default function ReferenceVisitors (globals :{ add (node :Node) :void }) {
 	
-	function Name (node :Node, parents :Node[]) :void {
-		const { name } :Node = node;
-		const { length } :Node[] = parents;
+	function Identifier (node :Identifier, parents :Node[]) :void {
+		const { name } = node;
+		const { length } = parents;
 		let index :number = 0;
 		if ( name==='arguments' ) {
 			for ( ; index<length; ++index ) {
-				const parent :Node = parents[index];
+				const parent = parents[index];
 				if ( scope_has(parent, name) || isFunction(parent) ) { return; }
 			}
 		}
 		else {
 			for ( ; index<length; ++index ) {
-				const parent :Node = parents[index];
+				const parent = parents[index];
 				if ( scope_has(parent, name) ) { return; }
 			}
 		}
@@ -27,9 +27,9 @@ export default function ReferenceVisitors (globals :{ add (node :Node) :void }) 
 	}
 	
 	return assign(create(null), {
-		Identifier: Name,
-		VariablePattern: Name,
-		ThisExpression (node :Node, parents :Node[]) :void {
+		Identifier,// Identifier (reference)
+		VariablePattern: Identifier,// Identifier (definition)
+		ThisExpression (node :ThisExpression, parents :Node[]) :void {
 			if ( parents.some(isFunction) ) { return; }
 			globals.add(node);
 		},
@@ -37,4 +37,6 @@ export default function ReferenceVisitors (globals :{ add (node :Node) :void }) 
 	
 };
 
-type Node = import('./default').Node;
+type Node = import('./Node').Node;
+type Identifier = import('./Node').Identifier;
+type ThisExpression = import('./Node').ThisExpression;

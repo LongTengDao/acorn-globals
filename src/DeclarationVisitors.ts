@@ -7,64 +7,64 @@ import { scope_add } from './scope';
 const isBigScope = (type :string) :boolean => type==='FunctionDeclaration' || type==='FunctionExpression' || type==='ArrowFunctionExpression' || type==='Program';
 const isAnyScope = (type :string) :boolean => type==='BlockStatement' || isBigScope(type);
 
-function Pattern (node :Node, parent :Node) :void {
+function Pattern (node :Pattern, scope :Node) :void {
 	switch ( node.type ) {
 		case 'Identifier':
-			scope_add(parent, node);
+			scope_add(scope, node);
 			break;
 		case 'ObjectPattern': {
-			const { properties } :Node = node;
-			const { length } :Node[] = properties;
+			const { properties } = node;
+			const { length } = properties;
 			for ( let index :number = 0; index<length; ++index ) {
-				const property :Node = properties[index];
-				Pattern(property.value || property.argument, parent);
+				const property = properties[index];
+				Pattern(property.value || property.argument, scope);
 			}
 			break;
 		}
 		case 'ArrayPattern': {
-			const { elements } :Node = node;
-			const { length } :( Node | null )[] = elements;
+			const { elements } = node;
+			const { length } = elements;
 			for ( let index :number = 0; index<length; ++index ) {
-				const element :Node | null = elements[index];
-				if ( element ) { Pattern(element, parent); }
+				const element = elements[index];
+				if ( element ) { Pattern(element, scope); }
 			}
 			break;
 		}
 		case 'RestElement':
-			Pattern(node.argument, parent);
+			Pattern(node.argument, scope);
 			break;
 		case 'AssignmentPattern':
-			Pattern(node.left, parent);
+			Pattern(node.left, scope);
 			break;
 		default:
 			throw Error(`Unrecognized pattern type: ${node.type}`);
 	}
 }
 
-function Function (node :Node) :void {
-	const { params } :Node = node;
-	const { length } :Node[] = params;
+function Function (scope :Function$) :void {
+	const { params } = scope;
+	const { length } = params;
 	for ( let index :number = 0; index<length; ++index ) {
-		Pattern(params[index], node);
+		Pattern(params[index], scope);
 	}
-	const { id } :Node = node;
-	if ( id ) { scope_add(node, id); }
+	const { id } = scope;
+	if ( id ) { scope_add(scope, id); }
 }
 
-function Class (node :Node) :void {
-	const { id } :Node = node;
-	if ( id ) { scope_add(node, id); }
+function Class (scope :Class$) :void {
+	const { id } = scope;
+	if ( id ) { scope_add(scope, id); }
 }
 
 const DECLARATION_VISITORS = {
 	
-	VariableDeclaration (node :Node, parents :Node[]) :void {
+	VariableDeclaration (node :VariableDeclaration, parents :Node[]) :void {
 		const isScope = node.kind==='var' ? isBigScope : isAnyScope;
 		for ( let index :number = parents.length-1; index>=0; --index ) {
-			const parent :Node = parents[index];
+			const parent = parents[index];
 			if ( isScope(parent.type) ) {
-				const { declarations } :Node = node;
-				const { length } :Node[] = declarations;
+				const { declarations } = node;
+				const { length } = declarations;
 				for ( let index :number = 0; index<length; ++index ) {
 					Pattern(declarations[index].id, parent);
 				}
@@ -73,11 +73,11 @@ const DECLARATION_VISITORS = {
 		}
 	},
 	
-	FunctionDeclaration (node :Node, parents :Node[]) :void {
-		const { id } :Node = node;
+	FunctionDeclaration (node :Function$, parents :Node[]) :void {
+		const { id } = node;
 		if ( id ) {
 			for ( let index :number = parents.length-2; index>=0; --index ) {
-				const parent :Node = parents[index];
+				const parent = parents[index];
 				if ( isBigScope(parent.type) ) {
 					scope_add(parent, id);
 					break;
@@ -88,11 +88,11 @@ const DECLARATION_VISITORS = {
 	},
 	Function,
 	
-	ClassDeclaration (node :Node, parents :Node[]) :void {
-		const { id } :Node = node;
+	ClassDeclaration (node :Class$, parents :Node[]) :void {
+		const { id } = node;
 		if ( id ) {
 			for ( let index :number = parents.length-2; index>=0; --index ) {
-				const parent :Node = parents[index];
+				const parent = parents[index];
 				if ( isAnyScope(parent.type) ) {
 					scope_add(parent, id);
 					break;
@@ -103,14 +103,14 @@ const DECLARATION_VISITORS = {
 	},
 	Class,
 	
-	TryStatement ({ handler } :Node) :void {
-		if ( handler ) { scope_add(handler, handler.param); }
+	TryStatement ({ handler } :TryStatement) :void {
+		if ( handler ) { Pattern(handler.param, handler); }
 	},
 	
 };
 
 export default function DeclarationVisitors (ast :Node) {
-	function Import (node :Node) :void { scope_add(ast, node.local); }
+	function Import (node :Import$Specifier) :void { scope_add(ast, node.local); }
 	return assign(create(null), DECLARATION_VISITORS, {
 		ImportSpecifier: Import,
 		ImportDefaultSpecifier: Import,
@@ -118,4 +118,10 @@ export default function DeclarationVisitors (ast :Node) {
 	});
 };
 
-type Node = import('./default').Node;
+type Node = import('./Node').Node;
+type Pattern = import('./Node').Pattern;
+type Function$ = import('./Node').Function$;
+type Class$ = import('./Node').Class$;
+type VariableDeclaration = import('./Node').VariableDeclaration;
+type TryStatement = import('./Node').TryStatement;
+type Import$Specifier = import('./Node').Import$Specifier;

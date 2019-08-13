@@ -10,25 +10,25 @@ import ReferenceVisitors from './ReferenceVisitors';
 
 const { ancestor, base } = require('acorn-walk');
 if ( !base.FieldDefinition ) {
-	base.FieldDefinition = function (node :any, st :any, c :any) :void {
-		if ( node.computed ) { c(node.key, st, 'Expression'); }
-		const { value } :Node = node;
-		if ( value ) { c(value, st, 'Expression'); }
+	base.FieldDefinition = function (node :FieldDefinition, state_parents :any | Node[], _continue :(node :Node, state :any | Node[], override :string) => void) :void {
+		if ( node.computed ) { _continue(node.key, state_parents, 'Expression'); }
+		const { value } = node;
+		if ( value ) { _continue(value, state_parents, 'Expression'); }
 	};
 }
 
-class Globals extends Map<string, Node[]> {
-	add (node :Node) :void {
+class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
+	add (this :Globals, node :Identifier | ThisExpression) :void {
 		const name :string = node.type==='ThisExpression' ? 'this' : node.name;
-		const nodes :Node[] | undefined = this.get(name);
+		const nodes = this.get(name);
 		if ( nodes ) { nodes.push(node); }
 		else { this.set(name, [ node ]); }
 	}
-	names () :string[] {
+	names (this :Globals) :string[] {
 		return [ ...this.keys() ];
 	}
-	nodes () :Node[] {
-		const nodes :Node[] = [];
+	nodes (this :Globals) {
+		const nodes :( Identifier | ThisExpression )[] = [];
 		for ( const value of this.values() ) {
 			apply(push, nodes, value);
 		}
@@ -36,12 +36,12 @@ class Globals extends Map<string, Node[]> {
 	}
 }
 
-function findGlobals (ast :Readonly<Node>) :Globals {
+function findGlobals (AST :Node) :Globals {
 	scope_new();
 	try {
 		const globals :Globals = new Globals;
-		ancestor(ast, DeclarationVisitors(ast));
-		ancestor(ast, ReferenceVisitors(globals));
+		ancestor(AST, DeclarationVisitors(AST));
+		ancestor(AST, ReferenceVisitors(globals));
 		return globals;
 	}
 	finally { scope_old(); }
@@ -50,25 +50,7 @@ function findGlobals (ast :Readonly<Node>) :Globals {
 import Default from '.default';
 export default Default(findGlobals, { version });
 
-export type Node = object & {
-	
-	name :string
-	kind :string
-	type :string
-	start :number
-	end :number
-	
-	id :Node
-	left :Node
-	value :Node | null
-	local :Node
-	param :Node
-	handler :Node | null
-	argument :Node
-	
-	params :Node[]
-	elements :( Node | null )[]
-	properties :Node[]
-	declarations :Node[]
-	
-};
+type Node = import('./Node').Node;
+type FieldDefinition = import('./Node').FieldDefinition;
+type Identifier = import('./Node').Identifier;
+type ThisExpression = import('./Node').ThisExpression;
