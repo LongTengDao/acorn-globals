@@ -7,13 +7,13 @@
 Important Notes
 ---------------
 
-This package is adapted from [`acorn-globals@4.3.4`].
+This package is adapted from `acorn-globals` (v4.3.4).
 
 When I found improvable things in use, I submitted some PR for to improve it together.
 
 But there's one thing I think it's not a defect, but a requirement for most people, but not for me, so I can only publish a modified package.
 
-The major difference is that `acorn-globals` automatically ignores references to global `undefined` variables, while `@ltd/acorn-globals` reserves it to decide in user land.
+The major difference is that `acorn-globals` automatically ignores references to global variable `undefined`, while `@ltd/acorn-globals` reserves it to decide in user land.
 
 Other differences
 -----------------
@@ -45,13 +45,13 @@ globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
 重要说明
 --------
 
-这个包改编自 [`acorn-globals@4.3.4`]。
+这个包改编自 `acorn-globals`（v4.3.4）。
 
 我在使用中发现可以改进的地方时，都第一时间提交了 PR 以共同完善。
 
 但是其中有一处我认为是它的功能而非缺陷，也是多数人的需求，但不是我的需求，因而只能单独发布一个修改后的包。
 
-这个最重要的差异就是，`acorn-globals` 会自动忽略对于全局 `undefined` 变量的引用，而 `@ltd/acorn-globals` 会保留，供用户自行取舍。
+这个最重要的差异就是，`acorn-globals` 会自动忽略对于全局变量 `undefined` 的引用，而 `@ltd/acorn-globals` 会保留，供用户自行取舍。
 
 其它不同
 --------
@@ -77,5 +77,3 @@ const globals = find(AST);
 
 globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
 ```
-
-[`acorn-globals@4.3.3`]: https://www.npmjs.org/package/acorn-globals
