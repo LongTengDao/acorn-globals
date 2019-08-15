@@ -15,12 +15,17 @@ export type Identifier = ReadonlyObject<{
 
 export type ObjectPattern = ReadonlyObject<{
 	type :'ObjectPattern',
-	properties :ReadonlyArray<ReadonlyObject<{ value :Pattern, argument? :never } | { value? :never, argument :Pattern }>>,
+	properties :ReadonlyArray<Property | RestElement | Unrecognized>,
 }>;
 
 export type ArrayPattern = ReadonlyObject<{
 	type :'ArrayPattern',
 	elements :ReadonlyArray<Pattern | null>,
+}>;
+
+export type Property = ReadonlyObject<{
+	type :'Property',
+	value :Pattern,
 }>;
 
 export type RestElement = ReadonlyObject<{
@@ -33,7 +38,7 @@ export type AssignmentPattern = ReadonlyObject<{
 	left :Pattern,
 }>;
 
-export type Pattern = Identifier | ObjectPattern | ArrayPattern | RestElement | AssignmentPattern | ReadonlyObject<{ type :'' }>;
+export type Pattern = Identifier | ObjectPattern | ArrayPattern | RestElement | AssignmentPattern | Unrecognized;
 
 export type Function$ = ReadonlyObject<{
 	type :'FunctionDeclaration' | 'Function',
@@ -67,4 +72,8 @@ export type FieldDefinition = ReadonlyObject<{
 	computed :boolean,
 	key :Node,
 	value :Node | null,
+}>;
+
+type Unrecognized = ReadonlyObject<{
+	type :'',
 }>;

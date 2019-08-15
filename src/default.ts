@@ -5,10 +5,11 @@ import push from '.Array.prototype.push';
 import apply from '.Reflect.apply';
 
 import { scope_new, scope_old } from './scope';
-import DeclarationVisitors from './DeclarationVisitors';
+import DECLARATION_VISITORS from './DECLARATION_VISITORS';
 import ReferenceVisitors from './ReferenceVisitors';
 
 const { ancestor, base } = require('acorn-walk');
+
 if ( !base.FieldDefinition ) {
 	base.FieldDefinition = function (node :FieldDefinition, state_parents :any | Node[], _continue :(node :Node, state :any | Node[], override :string) => void) :void {
 		if ( node.computed ) { _continue(node.key, state_parents, 'Expression'); }
@@ -18,12 +19,6 @@ if ( !base.FieldDefinition ) {
 }
 
 class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
-	add (this :Globals, node :Identifier | ThisExpression) :void {
-		const name :string = node.type==='ThisExpression' ? 'this' : node.name;
-		const nodes = this.get(name);
-		if ( nodes ) { nodes.push(node); }
-		else { this.set(name, [ node ]); }
-	}
 	names (this :Globals) :string[] {
 		return [ ...this.keys() ];
 	}
@@ -40,7 +35,7 @@ function findGlobals (AST :Node) :Globals {
 	scope_new();
 	try {
 		const globals :Globals = new Globals;
-		ancestor(AST, DeclarationVisitors(AST));
+		ancestor(AST, DECLARATION_VISITORS);
 		ancestor(AST, ReferenceVisitors(globals));
 		return globals;
 	}

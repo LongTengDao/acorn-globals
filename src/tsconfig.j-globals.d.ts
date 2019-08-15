@@ -10,7 +10,13 @@ declare module '.Map' { export default constructor;
 }
 
 declare module '.Object.assign' { export default Object.assign; }
-declare module '.Object.create' { export default Object.create; }
+declare module '.Object.create' { export default create;
+	function create                                                                 (proto :null                  ) :object                                                                                           ;
+	function create<                  D extends TypedPropertyDescriptorMap<object>> (proto :null, descriptorMap :D) :object & ( D extends TypedPropertyDescriptorMap<infer O> ? O : never )                           ;
+	function create<P extends object                                              > (proto :P                     ) :object &                                                                 { [K in keyof P] :P[K] };
+	function create<P extends object, D extends TypedPropertyDescriptorMap<object>> (proto :P,    descriptorMap :D) :object & ( D extends TypedPropertyDescriptorMap<infer O> ? O : never ) & { [K in keyof P] :P[K] };
+	type TypedPropertyDescriptorMap<O> = { [K in keyof O] :TypedPropertyDescriptor<O[K]> };
+}
 declare module '.Object.defineProperty' { export default Object.defineProperty; }
 declare module '.Object.freeze' { export default Object.freeze; }
 declare module '.Object.prototype.hasOwnProperty' { export default Object.prototype.hasOwnProperty; }

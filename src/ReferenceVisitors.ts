@@ -3,40 +3,52 @@ import assign from '.Object.assign';
 
 import { scope_has } from './scope';
 
-const isFunction = ({ type } :Node) :boolean => type==='FunctionExpression' || type==='FunctionDeclaration';
+const isAutoScope = (type :string) :boolean =>
+	type==='FunctionExpression' ||
+	type==='FunctionDeclaration';
 
-export default function ReferenceVisitors (globals :{ add (node :Node) :void }) {
+export default function ReferenceVisitors (globals :Map<string, ( Identifier | ThisExpression )[]>) {
 	
 	function Identifier (node :Identifier, parents :Node[]) :void {
 		const { name } = node;
-		const { length } = parents;
-		let index :number = 0;
+		let index :number = parents.length;
 		if ( name==='arguments' ) {
-			for ( ; index<length; ++index ) {
-				const parent = parents[index];
-				if ( scope_has(parent, name) || isFunction(parent) ) { return; }
+			while ( index ) {
+				const parent = parents[--index];
+				if ( scope_has(parent, name) || isAutoScope(parent.type) ) { return; }
 			}
 		}
 		else {
-			for ( ; index<length; ++index ) {
-				const parent = parents[index];
-				if ( scope_has(parent, name) ) { return; }
+			while ( index ) {
+				if ( scope_has(parents[--index], name) ) { return; }
 			}
 		}
-		globals.add(node);
+		add(globals, node, name);
+	}
+	
+	function ThisExpression (node :ThisExpression, parents :Node[]) :void {
+		for ( let index :number = parents.length; index; ) {
+			if ( isAutoScope(parents[--index].type) ) { return; }
+		}
+		add(globals, node, 'this');
 	}
 	
 	return assign(create(null), {
-		Identifier,// Identifier (reference)
-		VariablePattern: Identifier,// Identifier (definition)
-		ThisExpression (node :ThisExpression, parents :Node[]) :void {
-			if ( parents.some(isFunction) ) { return; }
-			globals.add(node);
-		},
+		Identifier,// reference
+		VariablePattern: Identifier,// definition
+		ThisExpression,
 	});
 	
 };
 
+function add (globals :Map<string, ( Identifier | ThisExpression )[]>, node :Identifier | ThisExpression, name :string) :void {
+	const nodes = globals.get(name);
+	if ( nodes ) { nodes.push(node); }
+	else { globals.set(name, [ node ]); }
+}
+
 type Node = import('./Node').Node;
+
 type Identifier = import('./Node').Identifier;
+
 type ThisExpression = import('./Node').ThisExpression;
