@@ -22,7 +22,8 @@ Other differences
     
 2.  Host Requirement: Because it is a back-end package, it uses ES 6+ feature.
     
-3.  Reduce the API: The the main export function only accepts the parsed `AST` as argument, not the `code` and `options` arguments, and no `parse` method exported. Because users may use different versions and grammar plug-ins with different `options` in different cases.
+3.  Reduce the API: The the main export function only accepts the parsed `AST` object as argument, not the `code` string and `options` arguments, and no `parse` method exported.
+    Because users may use different versions and grammar plug-ins with different `options` in different cases, I don't want too much coupling.
     
 4.  Dependency Extension: The `base.FieldDefinition` of the dependency package `acorn-walk` is extended to support the `acorn-class-fields` and `acorn-static-class-features` grammar plug-ins which are still in stage 3.
     
@@ -60,9 +61,9 @@ globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
     
 2.  宿主要求：由于是后端用包，使用了 ES 6 以上的特性。
     
-3.  缩小接口：模块主导出函数只接受解析后的 `AST` 作为参数，而不接受 `code` 和 `options`，同时取消导出 `parse` 方法函数，以满足用户对不同 `acorn` 版本、语法插件、`options` 的需求。
+3.  缩小接口：模块主导出函数只接受解析后的 `AST` 对象作为参数，而不接受 `code` 字符串和 `options`，同时取消导出 `parse` 方法函数，以尽可能解除耦合，满足用户对不同 `acorn` 版本、语法插件、`options` 的需求。
     
-4.  依赖扩展：扩展了依赖包 `acorn-walk` 的 `.base.FieldDefinition`，用于支持尚处于 stage 3 的 `acorn-class-fields`、`acorn-static-class-features` 语法插件。
+4.  依赖扩展：扩展了依赖包 `acorn-walk` 的 `base.FieldDefinition`，用于支持尚处于 stage 3 的 `acorn-class-fields`、`acorn-static-class-features` 语法插件。
     
 5.  参数只读：不对 `AST` 参数作修改（`acorn-globals` 中修改了节点的 `locals` 和 `parents` 属性）。
     
