@@ -15,6 +15,8 @@ But there's one thing I think it's not a defect, but a requirement for most peop
 
 The major difference is that `acorn-globals` automatically ignores references to global variable `undefined`, while `@ltd/acorn-globals` reserves it to decide in user land.
 
+At the same time, if the `sourceType` property of the input `Program` node is not `module`, the variable names declared at top-level will also be included in the output.
+
 Other differences
 -----------------
 
@@ -53,6 +55,8 @@ globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
 但是其中有一处我认为是它的功能而非缺陷，也是多数人的需求，但不是我的需求，因而只能单独发布一个修改后的包。
 
 这个最重要的差异就是，`acorn-globals` 会自动忽略对于全局变量 `undefined` 的引用，而 `@ltd/acorn-globals` 会保留，供用户自行取舍。
+
+同时，如果传入的 `Program` 节点的 `sourceType` 属性不是 `"module"`，那么顶层声明的变量名也会列入全局名录。
 
 其它不同
 --------

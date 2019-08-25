@@ -12,14 +12,23 @@ export function scope_new () :void {
 }
 
 export function scope_add (scope :Node, { name } :Identifier) :void {
-	let names :Set<string> | undefined = scope_names.get(scope);
+	let names = scope_names.get(scope);
 	if ( !names ) { scope_names.set(scope, names = new Set); }
 	names.add(name);
 }
 
 export function scope_has (scope :Node, name :string) :boolean {
-	const names :Set<string> | undefined = scope_names.get(scope);
+	const names = scope_names.get(scope);
 	return names ? names.has(name) : false;
+}
+
+export function scope_low (scope :Node, globals :Map<string, ( Identifier | ThisExpression )[]>) :void {
+	const names = scope_names.get(scope);
+	if ( names ) {
+		for ( const name of names ) {
+			globals.set(name, []);
+		}
+	}
 }
 
 export function scope_old () :void {
@@ -27,5 +36,5 @@ export function scope_old () :void {
 }
 
 type Node = import('./Node').Node;
-
 type Identifier = import('./Node').Identifier;
+type ThisExpression = import('./Node').ThisExpression;

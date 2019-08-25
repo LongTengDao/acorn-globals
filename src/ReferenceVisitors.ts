@@ -8,7 +8,7 @@ const isAutoScope = (type :string) :boolean =>
 
 export default function ReferenceVisitors (globals :Map<string, ( Identifier | ThisExpression )[]>) {
 	
-	function Identifier (node :Identifier, parents :Node[]) :void {
+	function Identifier (node :Identifier, parents :readonly Node[]) :void {
 		const { name } = node;
 		let index :number = parents.length;
 		if ( name==='arguments' ) {
@@ -25,7 +25,7 @@ export default function ReferenceVisitors (globals :Map<string, ( Identifier | T
 		add(globals, node, name);
 	}
 	
-	function ThisExpression (node :ThisExpression, parents :Node[]) :void {
+	function ThisExpression (node :ThisExpression, parents :readonly Node[]) :void {
 		for ( let index :number = parents.length; index; ) {
 			if ( isAutoScope(parents[--index].type) ) { return; }
 		}

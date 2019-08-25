@@ -58,7 +58,7 @@ function Pattern (node :Pattern, scope :Node) :void {
 	}
 }
 
-function VariableDeclaration (node :VariableDeclaration, parents :Node[]) :void {
+function VariableDeclaration (node :VariableDeclaration, parents :readonly Node[]) :void {
 	const isScope = node.kind==='var' ? isVarScope : isAnyScope;
 	for ( let index :number = parents.length-1; index>=0; --index ) {
 		const parent = parents[index];
@@ -73,7 +73,7 @@ function VariableDeclaration (node :VariableDeclaration, parents :Node[]) :void 
 	}
 }
 
-function FunctionDeclaration (node :Function$, parents :Node[]) :void {
+function FunctionDeclaration (node :Function$, parents :readonly Node[]) :void {
 	const { id } = node;
 	if ( id ) {
 		for ( let index :number = parents.length-2; index>=0; --index ) {
@@ -97,7 +97,7 @@ function Function (scope :Function$) :void {
 	if ( id ) { scope_add(scope, id); }
 }
 
-function ClassDeclaration (node :Class$, parents :Node[]) :void {
+function ClassDeclaration (node :Class$, parents :readonly Node[]) :void {
 	const { id } = node;
 	if ( id ) {
 		for ( let index :number = parents.length-2; index>=0; --index ) {
@@ -120,7 +120,7 @@ function TryStatement ({ handler } :TryStatement) :void {
 	if ( handler ) { Pattern(handler.param, handler); }
 }
 
-function Import$Specifier ({ local } :Import$Specifier, parents :Node[]) :void {
+function Import$Specifier ({ local } :Import$Specifier, parents :readonly Node[]) :void {
 	scope_add(parents[0], local);
 }
 

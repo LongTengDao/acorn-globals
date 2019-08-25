@@ -1,7 +1,7 @@
 type ReadonlyObject<O> = object & Readonly<O>;
 
 export type Node = ReadonlyObject<{
-	type :string,
+	type :string
 }>;
 
 export type ThisExpression = ReadonlyObject<{

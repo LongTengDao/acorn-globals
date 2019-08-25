@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.2.0';
+const version = '1.3.0';
 
 const push = Array.prototype.push;
 
@@ -16,14 +16,23 @@ function scope_new ()       {
 }
 
 function scope_add (scope      , { name }            )       {
-	let names                          = scope_names.get(scope);
+	let names = scope_names.get(scope);
 	if ( !names ) { scope_names.set(scope, names = new Set); }
 	names.add(name);
 }
 
 function scope_has (scope      , name        )          {
-	const names                          = scope_names.get(scope);
+	const names = scope_names.get(scope);
 	return names ? names.has(name) : false;
+}
+
+function scope_low (scope      , globals                                                )       {
+	const names = scope_names.get(scope);
+	if ( names ) {
+		for ( const name of names ) {
+			globals.set(name, []);
+		}
+	}
 }
 
 function scope_old ()       {
@@ -121,7 +130,7 @@ function Pattern (node         , scope      )       {
 	}
 }
 
-function VariableDeclaration (node                     , parents        )       {
+function VariableDeclaration (node                     , parents                 )       {
 	const isScope = node.kind==='var' ? isVarScope : isAnyScope;
 	for ( let index         = parents.length-1; index>=0; --index ) {
 		const parent = parents[index];
@@ -136,7 +145,7 @@ function VariableDeclaration (node                     , parents        )       
 	}
 }
 
-function FunctionDeclaration (node           , parents        )       {
+function FunctionDeclaration (node           , parents                 )       {
 	const { id } = node;
 	if ( id ) {
 		for ( let index         = parents.length-2; index>=0; --index ) {
@@ -160,7 +169,7 @@ function Function (scope           )       {
 	if ( id ) { scope_add(scope, id); }
 }
 
-function ClassDeclaration (node        , parents        )       {
+function ClassDeclaration (node        , parents                 )       {
 	const { id } = node;
 	if ( id ) {
 		for ( let index         = parents.length-2; index>=0; --index ) {
@@ -183,7 +192,7 @@ function TryStatement ({ handler }              )       {
 	if ( handler ) { Pattern(handler.param, handler); }
 }
 
-function Import$Specifier ({ local }                  , parents        )       {
+function Import$Specifier ({ local }                  , parents                 )       {
 	scope_add(parents[0], local);
 }
 
@@ -205,7 +214,7 @@ const isAutoScope = (type        )          =>
 
 function ReferenceVisitors (globals                                                ) {
 	
-	function Identifier (node            , parents        )       {
+	function Identifier (node            , parents                 )       {
 		const { name } = node;
 		let index         = parents.length;
 		if ( name==='arguments' ) {
@@ -222,7 +231,7 @@ function ReferenceVisitors (globals                                             
 		add(globals, node, name);
 	}
 	
-	function ThisExpression (node                , parents        )       {
+	function ThisExpression (node                , parents                 )       {
 		for ( let index         = parents.length; index; ) {
 			if ( isAutoScope(parents[--index].type) ) { return; }
 		}
@@ -273,7 +282,7 @@ const Default = (
 const { ancestor, base } = require('acorn-walk');
 
 if ( !base.FieldDefinition ) {
-	base.FieldDefinition = function (node                 , state_parents              , _continue                                                             )       {
+	base.FieldDefinition = function (node                           , state_parents                        , _continue                                                                                 )       {
 		if ( node.computed ) { _continue(node.key, state_parents, 'Expression'); }
 		const { value } = node;
 		if ( value ) { _continue(value, state_parents, 'Expression'); }
@@ -293,12 +302,13 @@ class Globals extends Map                                            {
 	}
 }
 
-function findGlobals (AST      )          {
+function findGlobals (AST                                             )          {
 	scope_new();
 	try {
 		const globals          = new Globals;
 		ancestor(AST, DECLARATION_VISITORS);
 		ancestor(AST, ReferenceVisitors(globals));
+		if ( AST.type==='Program' && AST.sourceType!=='module' ) { scope_low(AST, globals); }
 		return globals;
 	}
 	finally { scope_old(); }
