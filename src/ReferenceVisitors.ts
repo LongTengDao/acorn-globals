@@ -1,5 +1,4 @@
-import create from '.Object.create';
-import assign from '.Object.assign';
+import Null from '.null';
 
 import { scope_has } from './scope';
 
@@ -33,7 +32,7 @@ export default function ReferenceVisitors (globals :Map<string, ( Identifier | T
 		add(globals, node, 'this');
 	}
 	
-	return assign(create(null), {
+	return Null({
 		Identifier,// reference
 		VariablePattern: Identifier,// definition
 		ThisExpression,

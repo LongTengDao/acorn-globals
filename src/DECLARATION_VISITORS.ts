@@ -1,7 +1,6 @@
-import create from '.Object.create';
-import assign from '.Object.assign';
-import freeze from '.Object.freeze';
 import Error from '.Error';
+import freeze from '.Object.freeze';
+import Null from '.null';
 
 import { scope_add } from './scope';
 
@@ -125,7 +124,7 @@ function Import$Specifier ({ local } :Import$Specifier, parents :Node[]) :void {
 	scope_add(parents[0], local);
 }
 
-export default /*#__PURE__*/freeze(/*#__PURE__*/assign(create(null), {
+export default /*#__PURE__*/freeze(Null({
 	VariableDeclaration,
 	FunctionDeclaration,
 	Function,
