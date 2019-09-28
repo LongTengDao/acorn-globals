@@ -1,13 +1,22 @@
 
+declare module '.Array' { export default Array; }
+declare module '.Array.isArray?=' { export default isArray;
+	function isArray (value :any) :value is readonly any[];
+}
+declare module '.Array.prototype' { export default Array.prototype; }
 declare module '.Array.prototype.push' { export default Array.prototype.push; }
 
 declare module '.Error' { export default Error; }
+
+declare module '.Infinity' { export default Infinity; }
 
 declare module '.Map' { export default constructor;
 	class constructor<K, V> extends Map<K, V> {
 		constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>)
 	}
 }
+
+declare module '.Math.floor' { export default Math.floor; }
 
 declare module '.Object.assign' { export default Object.assign; }
 declare module '.Object.create' { export default create;
@@ -16,7 +25,9 @@ declare module '.Object.create' { export default create;
 }
 declare module '.Object.defineProperty' { export default Object.defineProperty; }
 declare module '.Object.freeze' { export default Object.freeze; }
+declare module '.Object.prototype' { export default Object.prototype; }
 declare module '.Object.prototype.hasOwnProperty' { export default Object.prototype.hasOwnProperty; }
+declare module '.Object.prototype.toString' { export default Object.prototype.toString; }
 declare module '.Object.seal' { export default Object.seal; }
 
 declare module '.Reflect.apply' { export default apply;
@@ -29,12 +40,19 @@ declare module '.Set' { export default constructor;
 	}
 }
 
+declare module '.String.fromCharCode' { export default String.fromCharCode; }
+
+declare module '.Symbol.species?' { export default Symbol.species; }
 declare module '.Symbol.toStringTag?' { export default Symbol.toStringTag; }
 
 declare module '.WeakMap' { export default constructor;
 	class constructor<K extends object, V> extends WeakMap<K, V> {
 		constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>)
 	}
+}
+
+declare module '.class.isPrimitive' { export default isPrimitive;
+	function isPrimitive (value :any) :value is undefined | null | boolean | string | symbol | number | bigint;
 }
 
 declare module '.default' { export default Default;
@@ -45,6 +63,8 @@ declare module '.default' { export default Default;
 	type Callable = (...args :any) => any;
 	type Newable = { new (...args :any) :any };
 }
+
+declare module '.native' { export default _; const _ :never; }
 
 declare module '.null' { export default NULL;
 	const NULL :{
@@ -72,3 +92,5 @@ declare module '.null' { export default NULL;
 declare module '.null.prototype' { export default NULL;
 	const NULL :object | null;
 }
+
+declare module '.undefined' { export default undefined; }

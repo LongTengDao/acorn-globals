@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.3.0';
+const version = '1.3.1';
 
 const push = Array.prototype.push;
 
@@ -43,8 +43,6 @@ const freeze = Object.freeze;
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-const create = Object.create;
-
 const NULL = (
 	/*! j-globals: null.prototype (internal) */
 	Object.create
@@ -52,6 +50,8 @@ const NULL = (
 		: null
 	/*¡ j-globals: null.prototype (internal) */
 );
+
+var create = Object.create;
 
 const Null = (
 	/*! j-globals: null.constructor (internal) */
@@ -208,10 +208,6 @@ const DECLARATION_VISITORS = /*#__PURE__*/freeze(Null({
 	ImportNamespaceSpecifier: Import$Specifier,
 }));
 
-const isAutoScope = (type        )          =>
-	type==='FunctionExpression' ||
-	type==='FunctionDeclaration';
-
 function ReferenceVisitors (globals                                                ) {
 	
 	function Identifier (node            , parents                 )       {
@@ -220,7 +216,9 @@ function ReferenceVisitors (globals                                             
 		if ( name==='arguments' ) {
 			while ( index ) {
 				const parent = parents[--index];
-				if ( scope_has(parent, name) || isAutoScope(parent.type) ) { return; }
+				if ( scope_has(parent, name) ) { return; }
+				const { type } = parent;
+				if ( type==='FunctionExpression' || type==='FunctionDeclaration' ) { return; }
 			}
 		}
 		else {
@@ -233,7 +231,9 @@ function ReferenceVisitors (globals                                             
 	
 	function ThisExpression (node                , parents                 )       {
 		for ( let index         = parents.length; index; ) {
-			if ( isAutoScope(parents[--index].type) ) { return; }
+			const parent = parents[--index];
+			const { type } = parent;
+			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='FieldDefinition' && parents[index+1]===( parent                    ).value ) { return; }
 		}
 		add(globals, node, 'this');
 	}
@@ -251,6 +251,8 @@ function add (globals                                                , node     
 	else { globals.set(name, [ node ]); }
 }
 
+const create$1 = Object.create;
+
 const assign = Object.assign;
 
 const toStringTag = typeof Symbol!=='undefined' ? Symbol.toStringTag : undefined;
@@ -263,13 +265,13 @@ const Default = (
 	/*! j-globals: default (internal) */
 	function Default (exports, addOnOrigin) {
 		return /*#__PURE__*/ function Module (exports, addOnOrigin) {
-			if ( !addOnOrigin ) { addOnOrigin = exports; exports = create(NULL); }
+			if ( !addOnOrigin ) { addOnOrigin = exports; exports = create$1(NULL); }
 			if ( assign ) { assign(exports, addOnOrigin); }
 			else { for ( var key in addOnOrigin ) { if ( hasOwnProperty.call(addOnOrigin, key) ) { exports[key] = addOnOrigin[key]; } } }
 			exports['default'] = exports;
 			typeof exports==='function' && exports.prototype && seal(exports.prototype);
 			if ( toStringTag ) {
-				var descriptor = create(NULL);
+				var descriptor = create$1(NULL);
 				descriptor.value = 'Module';
 				defineProperty(exports, toStringTag, descriptor);
 			}
