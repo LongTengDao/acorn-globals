@@ -1,4 +1,4 @@
 declare module '*?text' {
-	const exports :string;
-	export default exports;
+	const text :string;
+	export default text;
 }

@@ -117,7 +117,7 @@ function Class (scope :Class$) :void {
 }
 
 function TryStatement ({ handler } :TryStatement) :void {
-	if ( handler ) { Pattern(handler.param, handler); }
+	if ( handler && handler.param ) { Pattern(handler.param, handler); }
 }
 
 function Import$Specifier ({ local } :Import$Specifier, parents :readonly Node[]) :void {

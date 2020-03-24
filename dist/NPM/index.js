@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.3.1';
+const version = '1.3.2';
 
 const push = Array.prototype.push;
 
@@ -41,7 +41,7 @@ function scope_old ()       {
 
 const freeze = Object.freeze;
 
-const hasOwnProperty = Object.prototype.hasOwnProperty;
+const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
 const NULL = (
 	/*! j-globals: null.prototype (internal) */
@@ -58,20 +58,27 @@ const Null = (
 	/*#__PURE__*/ function () {
 		var assign = Object.assign || function assign (target, source) {
 			for ( var key in source ) {
-				if ( hasOwnProperty.call(source, key) ) { target[key] = source[key]; }
+				if ( getOwnPropertyDescriptor(source, key) ) { target[key] = source[key]; }
 			}
 			return target;
 		};
-		var NULL$1 = function (object) {
+		function Nullify (object) {
+			delete object.prototype.constructor;
+			freeze(object.prototype);
+			return object;
+		}
+		var Null = function (object) {
 			if ( object ) {
-				return /*#__PURE__*/ assign(/*#__PURE__*/ create(NULL), object);
+				return typeof object==='function'
+					? /*#__PURE__*/ Nullify(object)
+					: /*#__PURE__*/ assign(/*#__PURE__*/ create(NULL), object);
 			}
 		};
-		delete NULL$1.name;
-		//try { delete NULL.length; } catch (error) {}
-		NULL$1.prototype = null;
-		freeze(NULL$1);
-		return NULL$1;
+		delete Null.name;
+		//try { delete Null.length; } catch (error) {}
+		Null.prototype = null;
+		freeze(Null);
+		return Null;
 	}()
 	/*¡ j-globals: null.constructor (internal) */
 );
@@ -189,7 +196,7 @@ function Class (scope        )       {
 }
 
 function TryStatement ({ handler }              )       {
-	if ( handler ) { Pattern(handler.param, handler); }
+	if ( handler && handler.param ) { Pattern(handler.param, handler); }
 }
 
 function Import$Specifier ({ local }                  , parents                 )       {
@@ -253,13 +260,11 @@ function add (globals                                                , node     
 
 const create$1 = Object.create;
 
-const assign = Object.assign;
-
 const toStringTag = typeof Symbol!=='undefined' ? Symbol.toStringTag : undefined;
 
 const defineProperty = Object.defineProperty;
 
-const seal = Object.seal;
+const assign = typeof Object!=='undefined' ? Object.assign : undefined;
 
 const Default = (
 	/*! j-globals: default (internal) */
@@ -267,14 +272,14 @@ const Default = (
 		return /*#__PURE__*/ function Module (exports, addOnOrigin) {
 			if ( !addOnOrigin ) { addOnOrigin = exports; exports = create$1(NULL); }
 			if ( assign ) { assign(exports, addOnOrigin); }
-			else { for ( var key in addOnOrigin ) { if ( hasOwnProperty.call(addOnOrigin, key) ) { exports[key] = addOnOrigin[key]; } } }
-			exports['default'] = exports;
-			typeof exports==='function' && exports.prototype && seal(exports.prototype);
+			else { for ( var key in addOnOrigin ) { if ( getOwnPropertyDescriptor(addOnOrigin, key) ) { exports[key] = addOnOrigin[key]; } } }
+			exports.default = exports;
 			if ( toStringTag ) {
 				var descriptor = create$1(NULL);
 				descriptor.value = 'Module';
 				defineProperty(exports, toStringTag, descriptor);
 			}
+			typeof exports==='function' && exports.prototype && freeze(exports.prototype);
 			return freeze(exports);
 		}(exports, addOnOrigin);
 	}

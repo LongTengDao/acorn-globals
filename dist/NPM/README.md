@@ -7,7 +7,7 @@
 Important Notes
 ---------------
 
-This package is adapted from `acorn-globals` (v4.3.5).
+This package is adapted from `acorn-globals` (v4.3.4).
 
 When I found improvable things in use, I submitted some PR for to improve it together.
 
@@ -48,7 +48,7 @@ globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
 重要说明
 --------
 
-这个包改编自 `acorn-globals`（v4.3.5）。
+这个包改编自 `acorn-globals`（v4.3.4）。
 
 我在使用中发现可以改进的地方时，都第一时间提交了 PR 以共同完善。
 

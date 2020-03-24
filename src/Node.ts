@@ -59,7 +59,7 @@ export type VariableDeclaration = ReadonlyObject<{
 
 export type TryStatement = ReadonlyObject<{
 	type :'TryStatement',
-	handler :Node & ReadonlyObject<{ param :Pattern }> | null,
+	handler :Node & ReadonlyObject<{ param :Pattern | null }> | null,
 }>;
 
 export type Import$Specifier = ReadonlyObject<{
