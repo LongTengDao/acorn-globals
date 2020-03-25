@@ -1,6 +1,6 @@
 export = exports;
 declare const exports :typeof findGlobals & Readonly<{
-	version :'1.3.2',
+	version :'1.4.0',
 	default :typeof exports,
 }>;
 

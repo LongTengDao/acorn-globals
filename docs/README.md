@@ -36,7 +36,7 @@ Other differences
 ```ts
 const find = require('@ltd/acorn-globals');
 
-const AST = require('acorn').Parser/*.extend(plugin)*/.parse(code/*, options*/);
+const AST = require('acorn')/*.Parser.extend(plugin)*/.parse(code/*, options*/);
 
 const globals = find(AST);
 
@@ -76,7 +76,7 @@ globals as Map<string, Node[]> & { names () :string[], nodes () :Node[] };
 ```ts
 const find = require('@ltd/acorn-globals');
 
-const AST = require('acorn').Parser/*.extend(plugin)*/.parse(code/*, options*/);
+const AST = require('acorn')/*.Parser.extend(plugin)*/.parse(code/*, options*/);
 
 const globals = find(AST);
 
