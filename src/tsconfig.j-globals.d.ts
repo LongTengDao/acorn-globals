@@ -13,9 +13,7 @@ declare module '.Function.prototype.apply' { export default Function.prototype.a
 declare module '.Infinity' { export default Infinity; }
 
 declare module '.Map' { export default constructor;
-	class constructor<K, V> extends Map<K, V> {
-		constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>)
-	}
+	class constructor<K, V> extends Map<K, V> { constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>) }
 }
 
 declare module '.Math.floor' { export default Math.floor; }
@@ -58,9 +56,7 @@ declare module '.Reflect.apply' { export default apply;
 }
 
 declare module '.Set' { export default constructor;
-	class constructor<V> extends Set<V> {
-		constructor (values? :Iterable<V>)
-	}
+	class constructor<V> extends Set<V> { constructor (values? :Iterable<V>) }
 }
 
 declare module '.String.fromCharCode' { export default String.fromCharCode; }
@@ -69,9 +65,7 @@ declare module '.Symbol.species?' { export default Symbol.species; }
 declare module '.Symbol.toStringTag?' { export default Symbol.toStringTag; }
 
 declare module '.WeakMap' { export default constructor;
-	class constructor<K extends object, V> extends WeakMap<K, V> {
-		constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>)
-	}
+	class constructor<K extends object, V> extends WeakMap<K, V> { constructor (entries? :Iterable<Readonly<{ 0 :K, 1 :V }>>) }
 }
 
 declare module '.class.isPrimitive' { export default isPrimitive;

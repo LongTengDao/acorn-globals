@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.4.0';
+const version = '1.5.0';
 
 const push = Array.prototype.push;
 
@@ -68,11 +68,11 @@ const Null = (
 			return object;
 		}
 		var Null = function (object) {
-			if ( object ) {
-				return typeof object==='function'
+			return object
+				? typeof object==='function'
 					? /*#__PURE__*/ Nullify(object)
-					: /*#__PURE__*/ assign(/*#__PURE__*/ create(NULL), object);
-			}
+					: /*#__PURE__*/ assign(/*#__PURE__*/ create(NULL), object)
+				: this;
 		};
 		delete Null.name;
 		//try { delete Null.length; } catch (error) {}
