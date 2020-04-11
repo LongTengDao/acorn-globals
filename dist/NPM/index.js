@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.5.0';
+const version = '1.6.0';
 
 const push = Array.prototype.push;
 

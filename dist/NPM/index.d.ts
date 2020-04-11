@@ -1,38 +1,36 @@
 export = exports;
 declare const exports :typeof findGlobals & Readonly<{
-	version :'1.5.0',
+	version :'1.6.0',
 	default :typeof exports,
 }>;
 
-declare function findGlobals<AST extends { loc? :{} }> (ast :AST) :Globals<AST extends { loc :{} } ? true : false>;
+declare function findGlobals (AST :{ loc :{} }) :Globals<true>;
+declare function findGlobals (AST :{ loc? :undefined }) :Globals<false>;
+declare function findGlobals (AST :{ loc? :{} }) :Globals<boolean>;
 
-declare interface Globals<WithLoc extends boolean> extends Map<string, ( WithLoc extends true ? NodeWithLoc : NodeWithoutLoc )[]> {
+declare interface Globals<WithLoc extends boolean> extends Map<string, Node<WithLoc>[]> {
 	names (this :Globals<boolean>) :string[]
-	nodes (this :Globals<true>) :NodeWithLoc[]
-	nodes (this :Globals<false>) :NodeWithoutLoc[]
+	nodes (this :Globals<WithLoc>) :Node<WithLoc>[];
 }
 
-type NodeWithoutLoc = {
+type Node<WithLoc extends boolean> = {
 	type :'Identifier' | 'ThisExpression',
 	name? :string,
 	start :number,
 	end :number,
-	loc? :undefined,
-};
+} & (
+	WithLoc extends true ? { loc :Loc } :
+		WithLoc extends false ? { loc? :undefined } :
+			{ loc? :Loc }
+	);
 
-type NodeWithLoc = {
-	type :'Identifier' | 'ThisExpression',
-	name? :string,
-	start :number,
-	end :number,
-	loc :{
-		start :{
-			line :Exclude<number, 0>,
-			column :number,
-		},
-		end :{
-			line :Exclude<number, 0>,
-			column :number,
-		},
+type Loc = {
+	start :{
+		line :Exclude<number, 0>,
+		column :number,
+	},
+	end :{
+		line :Exclude<number, 0>,
+		column :number,
 	},
 };
