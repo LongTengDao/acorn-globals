@@ -1,6 +1,10 @@
 {
 	"compilerOptions": {
 		"target": "ESNext",
+		"baseUrl": "..",
+		"paths": {
+			"acorn-walk": [ "/node_modules/acorn-walk/dist/walk.d.ts" ]
+		},
 		"strict": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true

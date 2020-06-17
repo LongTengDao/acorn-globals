@@ -8,15 +8,20 @@ import { scope_new, scope_low, scope_old } from './scope';
 import DECLARATION_VISITORS from './DECLARATION_VISITORS';
 import ReferenceVisitors from './ReferenceVisitors';
 
-const { ancestor, base } = require('acorn-walk');
+const { ancestor, base } :typeof import('acorn-walk') & { base :any } = require('acorn-walk');
 
-if ( !base.FieldDefinition ) {
-	base.FieldDefinition = function (node :Readonly<FieldDefinition>, state_parents :Readonly<any | Node[]>, _continue :(node :Readonly<Node>, state :Readonly<any | Node[]>, override :string) => void) :void {
-		if ( node.computed ) { _continue(node.key, state_parents, 'Expression'); }
-		const { value } = node;
-		if ( value ) { _continue(value, state_parents, 'Expression'); }
-	};
-}
+base.FieldDefinition ?? ( base.FieldDefinition =
+		(node :Readonly<FieldDefinition>, state_or_parents :Readonly<any | Node[]>, _continue :(node :Readonly<Node>, state :Readonly<any | Node[]>, override :string) => void) :void => {
+			if ( node.computed ) { _continue(node.key, state_or_parents, 'Expression'); }
+			const { value } = node;
+			value && _continue(value, state_or_parents, 'Expression');
+		}
+);
+
+base.ChainExpression ?? ( base.ChainExpression =
+		(node :Readonly<ChainExpression>, state_or_parents :Readonly<any | Node[]>, _continue :(node :Readonly<Node>, state :Readonly<any | Node[]>, override :string) => void) :void =>
+			_continue(node.expression, state_or_parents, 'Expression')
+);
 
 class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
 	names (this :Globals) :string[] {
@@ -24,29 +29,24 @@ class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
 	}
 	nodes (this :Globals) {
 		const nodes :( Identifier | ThisExpression )[] = [];
-		for ( const value of this.values() ) {
-			apply(push, nodes, value);
-		}
+		for ( const value of this.values() ) { apply(push, nodes, value); }
 		return nodes;
 	}
 }
 
-function findGlobals (AST :Node & { sourceType? :'module' | 'script' }) :Globals {
+const findGlobals = (AST :Node & { sourceType? :'module' | 'script' }) :Globals => {
 	scope_new();
 	try {
 		const globals :Globals = new Globals;
 		ancestor(AST, DECLARATION_VISITORS);
 		ancestor(AST, ReferenceVisitors(globals));
-		if ( AST.type==='Program' && AST.sourceType!=='module' ) { scope_low(AST, globals); }
+		AST.type==='Program' && AST.sourceType!=='module' && scope_low(AST, globals);
 		return globals;
 	}
 	finally { scope_old(); }
-}
+};
 
 import Default from '.default';
 export default Default(findGlobals, { version });
 
-type Node = import('./Node').Node;
-type FieldDefinition = import('./Node').FieldDefinition;
-type Identifier = import('./Node').Identifier;
-type ThisExpression = import('./Node').ThisExpression;
+import type { Node, FieldDefinition, ChainExpression, Identifier, ThisExpression } from './Node';

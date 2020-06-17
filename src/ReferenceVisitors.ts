@@ -2,9 +2,16 @@ import Null from '.null';
 
 import { scope_has } from './scope';
 
-export default function ReferenceVisitors (globals :Map<string, ( Identifier | ThisExpression )[]>) {
+const add = (globals :Map<string, ( Identifier | ThisExpression )[]>, node :Identifier | ThisExpression, name :string) :void => {
+	const nodes = globals.get(name);
+	nodes
+		? nodes[nodes.length] = node
+		: globals.set(name, [ node ]);
+};
+
+export default (globals :Map<string, ( Identifier | ThisExpression )[]>) => {
 	
-	function Identifier (node :Identifier, parents :readonly Node[]) :void {
+	const Identifier = (node :Identifier, parents :readonly Node[]) :void => {
 		const { name } = node;
 		let index :number = parents.length;
 		if ( name==='arguments' ) {
@@ -21,16 +28,17 @@ export default function ReferenceVisitors (globals :Map<string, ( Identifier | T
 			}
 		}
 		add(globals, node, name);
-	}
+	};
 	
-	function ThisExpression (node :ThisExpression, parents :readonly Node[]) :void {
-		for ( let index :number = parents.length; index; ) {
+	const ThisExpression = (node :ThisExpression, parents :readonly Node[]) :void => {
+		let index :number = parents.length;
+		while ( index ) {
 			const parent = parents[--index];
 			const { type } = parent;
 			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='FieldDefinition' && parents[index+1]===( parent as FieldDefinition ).value ) { return; }
 		}
 		add(globals, node, 'this');
-	}
+	};
 	
 	return Null({
 		Identifier,// reference
@@ -40,13 +48,4 @@ export default function ReferenceVisitors (globals :Map<string, ( Identifier | T
 	
 };
 
-function add (globals :Map<string, ( Identifier | ThisExpression )[]>, node :Identifier | ThisExpression, name :string) :void {
-	const nodes = globals.get(name);
-	if ( nodes ) { nodes.push(node); }
-	else { globals.set(name, [ node ]); }
-}
-
-type Node = import('./Node').Node;
-type Identifier = import('./Node').Identifier;
-type ThisExpression = import('./Node').ThisExpression;
-type FieldDefinition = import('./Node').FieldDefinition;
+import type { Node, Identifier, ThisExpression, FieldDefinition } from './Node';
