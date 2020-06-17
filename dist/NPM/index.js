@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.7.0';
+const version = '1.8.0';
 
 const Map$1 = Map;
 
@@ -312,18 +312,19 @@ const Default = (
 
 const { ancestor, base }                                              = require('acorn-walk');
 
-base.FieldDefinition ?? ( base.FieldDefinition =
-		(node                           , state_or_parents                        , _continue                                                                                 )       => {
-			if ( node.computed ) { _continue(node.key, state_or_parents, 'Expression'); }
-			const { value } = node;
-			value && _continue(value, state_or_parents, 'Expression');
-		}
-);
-
-base.ChainExpression ?? ( base.ChainExpression =
-		(node                           , state_or_parents                        , _continue                                                                                 )       =>
-			_continue(node.expression, state_or_parents, 'Expression')
-);
+base.FieldDefinition ?? ( base.FieldDefinition = (
+	node                           ,
+	state_or_parents                        ,
+	_continue   
+		                     
+		                              
+		                
+	         
+)       => {
+	node.computed && _continue(node.key, state_or_parents, 'Expression');
+	const { value } = node;
+	value && _continue(value, state_or_parents, 'Expression');
+} );
 
 class Globals extends Map$1                                            {
 	names (             )           {

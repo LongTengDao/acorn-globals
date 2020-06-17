@@ -10,18 +10,19 @@ import ReferenceVisitors from './ReferenceVisitors';
 
 const { ancestor, base } :typeof import('acorn-walk') & { base :any } = require('acorn-walk');
 
-base.FieldDefinition ?? ( base.FieldDefinition =
-		(node :Readonly<FieldDefinition>, state_or_parents :Readonly<any | Node[]>, _continue :(node :Readonly<Node>, state :Readonly<any | Node[]>, override :string) => void) :void => {
-			if ( node.computed ) { _continue(node.key, state_or_parents, 'Expression'); }
-			const { value } = node;
-			value && _continue(value, state_or_parents, 'Expression');
-		}
-);
-
-base.ChainExpression ?? ( base.ChainExpression =
-		(node :Readonly<ChainExpression>, state_or_parents :Readonly<any | Node[]>, _continue :(node :Readonly<Node>, state :Readonly<any | Node[]>, override :string) => void) :void =>
-			_continue(node.expression, state_or_parents, 'Expression')
-);
+base.FieldDefinition ?? ( base.FieldDefinition = (
+	node :Readonly<FieldDefinition>,
+	state_or_parents :Readonly<any | Node[]>,
+	_continue :(
+		node :Readonly<Node>,
+		state :Readonly<any | Node[]>,
+		override :string
+	) => void
+) :void => {
+	node.computed && _continue(node.key, state_or_parents, 'Expression');
+	const { value } = node;
+	value && _continue(value, state_or_parents, 'Expression');
+} );
 
 class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
 	names (this :Globals) :string[] {
@@ -49,4 +50,4 @@ const findGlobals = (AST :Node & { sourceType? :'module' | 'script' }) :Globals 
 import Default from '.default';
 export default Default(findGlobals, { version });
 
-import type { Node, FieldDefinition, ChainExpression, Identifier, ThisExpression } from './Node';
+import type { Node, FieldDefinition, Identifier, ThisExpression } from './Node';

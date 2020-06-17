@@ -74,11 +74,6 @@ export type FieldDefinition = ReadonlyObject<{
 	value :Node | null,
 }>;
 
-export type ChainExpression = ReadonlyObject<{
-	type :'ChainExpression',
-	expression :Node,
-}>;
-
 type Unrecognized = ReadonlyObject<{
 	type :'',
 }>;
