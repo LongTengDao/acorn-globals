@@ -16,7 +16,7 @@ export default (globals :Map<string, ( Identifier | ThisExpression )[]>) => {
 		let index :number = parents.length;
 		if ( name==='arguments' ) {
 			while ( index ) {
-				const parent = parents[--index];
+				const parent = parents[--index]!;
 				if ( scope_has(parent, name) ) { return; }
 				const { type } = parent;
 				if ( type==='FunctionExpression' || type==='FunctionDeclaration' ) { return; }
@@ -24,7 +24,7 @@ export default (globals :Map<string, ( Identifier | ThisExpression )[]>) => {
 		}
 		else {
 			while ( index ) {
-				if ( scope_has(parents[--index], name) ) { return; }
+				if ( scope_has(parents[--index]!, name) ) { return; }
 			}
 		}
 		add(globals, node, name);
@@ -33,9 +33,9 @@ export default (globals :Map<string, ( Identifier | ThisExpression )[]>) => {
 	const ThisExpression = (node :ThisExpression, parents :readonly Node[]) :void => {
 		let index :number = parents.length;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index]!;
 			const { type } = parent;
-			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='FieldDefinition' && parents[index+1]===( parent as FieldDefinition ).value ) { return; }
+			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='PropertyDefinition' && parents[index+1]===( parent as PropertyDefinition ).value ) { return; }
 		}
 		add(globals, node, 'this');
 	};
@@ -48,4 +48,4 @@ export default (globals :Map<string, ( Identifier | ThisExpression )[]>) => {
 	
 };
 
-import type { Node, Identifier, ThisExpression, FieldDefinition } from './Node';
+import type { Node, Identifier, ThisExpression, PropertyDefinition } from './Node';

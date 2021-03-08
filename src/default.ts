@@ -10,8 +10,8 @@ import ReferenceVisitors from './ReferenceVisitors';
 
 const { ancestor, base } :typeof import('acorn-walk') & { base :any } = require('acorn-walk');
 
-base.FieldDefinition ?? ( base.FieldDefinition = (
-	node :Readonly<FieldDefinition>,
+base.PropertyDefinition ?? ( base.PropertyDefinition = (
+	node :Readonly<PropertyDefinition>,
 	state_or_parents :Readonly<any | Node[]>,
 	_continue :(
 		node :Readonly<Node>,
@@ -50,4 +50,4 @@ const findGlobals = (AST :Node & { sourceType? :'module' | 'script' }) :Globals 
 import Default from '.default';
 export default Default(findGlobals, { version });
 
-import type { Node, FieldDefinition, Identifier, ThisExpression } from './Node';
+import type { Node, PropertyDefinition, Identifier, ThisExpression } from './Node';

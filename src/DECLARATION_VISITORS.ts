@@ -24,7 +24,7 @@ const Pattern = (node :Pattern, scope :Node) :void => {
 		case 'ObjectPattern':{// { Pattern }
 			let index :number = 0;
 			for ( const { properties } = node, { length } = properties; index<length; ++index ) {
-				const property = properties[index];
+				const property = properties[index]!;
 				switch ( property.type ) {
 					case 'Property':// { key: valuePattern }
 						Pattern(property.value, scope);
@@ -66,10 +66,10 @@ const VariableDeclaration = (node :VariableDeclaration, parents :readonly Node[]
 	const isScope = node.kind==='var' ? isVarScope : isAnyScope;
 	let index :number = parents.length;
 	while ( index ) {
-		const parent = parents[--index];
+		const parent = parents[--index]!;
 		if ( isScope(parent.type) ) {
 			let index :number = 0;
-			for ( const { declarations } = node, { length } = declarations; index<length; ++index ) { Pattern(declarations[index].id, parent); }
+			for ( const { declarations } = node, { length } = declarations; index<length; ++index ) { Pattern(declarations[index]!.id, parent); }
 			break;
 		}
 	}
@@ -77,7 +77,7 @@ const VariableDeclaration = (node :VariableDeclaration, parents :readonly Node[]
 
 const Function = (scope :Function$) :void => {
 	let index :number = 0;
-	for ( const { params } = scope, { length } = params; index<length; ++index ) { Pattern(params[index], scope); }
+	for ( const { params } = scope, { length } = params; index<length; ++index ) { Pattern(params[index]!, scope); }
 	const { id } = scope;
 	id && scope_add(scope, id);
 };
@@ -86,7 +86,7 @@ const FunctionDeclaration = (node :Function$, parents :readonly Node[]) :void =>
 	if ( id ) {
 		let index :number = parents.length - 1;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index]!;
 			if ( isVarScope(parent.type) ) {
 				scope_add(parent, id);
 				break;
@@ -105,7 +105,7 @@ const ClassDeclaration = (node :Class$, parents :readonly Node[]) :void => {
 	if ( id ) {
 		let index :number = parents.length - 1;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index]!;
 			if ( isAnyScope(parent.type) ) {
 				scope_add(parent, id);
 				break;
@@ -123,7 +123,7 @@ const TryStatement = ({ handler } :TryStatement) :void => {
 };
 
 const Import$Specifier = ({ local } :Import$Specifier, parents :readonly Node[]) :void => {
-	scope_add(parents[0], local);
+	scope_add(parents[0]!, local);
 };
 
 export default /*#__PURE__*/freeze(Null({

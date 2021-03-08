@@ -67,8 +67,8 @@ export type Import$Specifier = ReadonlyObject<{
 	local :Identifier,
 }>;
 
-export type FieldDefinition = ReadonlyObject<{
-	type :'FieldDefinition',
+export type PropertyDefinition = ReadonlyObject<{
+	type :'PropertyDefinition',
 	computed :boolean,
 	key :Node,
 	value :Node | null,

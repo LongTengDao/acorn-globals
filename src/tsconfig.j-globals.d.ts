@@ -43,7 +43,6 @@ declare module '.Object.create' { export default create;
 }
 declare module '.Object.defineProperty' { export default Object.defineProperty; }
 declare module '.Object.freeze' { export default Object.freeze; }
-declare module '.Object.getOwnPropertyDescriptor' { export default Object.getOwnPropertyDescriptor; }
 declare module '.Object.getOwnPropertySymbols?' { export default getOwnPropertySymbols;
 	function getOwnPropertySymbols<T extends {}> (nonNullable :T) :Extract<keyof T, symbol>[];
 }
@@ -52,6 +51,7 @@ declare module '.Object.keys' { export default keys;
 }
 declare module '.Object.prototype' { export default Object.prototype; }
 declare module '.Object.prototype.hasOwnProperty' { export default Object.prototype.hasOwnProperty; }
+declare module '.Object.prototype.propertyIsEnumerable' { export default Object.prototype.propertyIsEnumerable; }
 declare module '.Object.prototype.toString' { export default Object.prototype.toString; }
 
 declare module '.Reflect.apply' { export default apply;
@@ -91,9 +91,8 @@ declare module '.null' { export default Null;
 	function Null<_ extends never, Object extends object> (origin :Object) :Object;
 	function Null<Value> (origin :null | object & { readonly [name :string] :Value }) :Null<Value>;
 	abstract class Null<ValueType = unknown> {
-		protected constructor (arg? :undefined);		static readonly prototype :null;
-	}
-	interface Null<ValueType = unknown> {
+		protected constructor (arg? :undefined);
+		static readonly prototype :null;
 		[name :string] :undefined | ValueType
 		toString? :ValueType
 		toLocaleString? :ValueType
@@ -106,7 +105,7 @@ declare module '.null' { export default Null;
 		__lookupGetter__? :ValueType
 		__lookupSetter__? :ValueType
 		__proto__? :ValueType
-		constructor? :ValueType
+		['constructor']? :ValueType
 	}
 }
 declare module '.null.prototype' { export default NULL;

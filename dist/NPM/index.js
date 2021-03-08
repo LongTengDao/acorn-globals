@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-const version = '1.8.0';
+const version = '2.0.0';
 
 const Map$1 = Map;
 
@@ -48,25 +48,32 @@ const freeze = Object.freeze;
 
 const Object_keys = Object.keys;
 
-const getOwnPropertySymbols = typeof Object!=='undefined' ? Object.getOwnPropertySymbols : undefined;
-
-const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+const getOwnPropertySymbols = Object.getOwnPropertySymbols;
 
 const undefined$1 = void 0;
+
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+const propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 const NULL = (
 	/*! j-globals: null.prototype (internal) */
 	Object.seal
-		? /*#__PURE__*/ Object.preventExtensions(Object.create(null))
+		? /*#__PURE__*/Object.preventExtensions(Object.create(null))
 		: null
 	/*¡ j-globals: null.prototype (internal) */
 );
 
-var create = Object.create;
+var isEnum = /*#__PURE__*/propertyIsEnumerable.call.bind(propertyIsEnumerable);
+var hasOwn = hasOwnProperty.bind
+	? /*#__PURE__*/hasOwnProperty.call.bind(hasOwnProperty)
+	: function (object, key) { return /*#__PURE__*/hasOwnProperty.call(object, key); };// && object!=null
+
+var create$1 = Object.create;
 
 const Null = (
 	/*! j-globals: null.constructor (internal) */
-	/*#__PURE__*/ function () {
+	/*#__PURE__*/function () {
 		var assign = Object.assign || function assign (target, source) {
 			var keys, index, key;
 			for ( keys = Object_keys(source), index = 0; index<keys.length;++index ) {
@@ -76,7 +83,7 @@ const Null = (
 			if ( getOwnPropertySymbols ) {
 				for ( keys = getOwnPropertySymbols(source), index = 0; index<keys.length;++index ) {
 					key = keys[index];
-					if ( getOwnPropertyDescriptor(source, key).enumerable ) { [key] = source[key]; }
+					if ( isEnum(source, key) ) { [key] = source[key]; }
 				}
 			}
 			return target;
@@ -90,8 +97,8 @@ const Null = (
 			return origin===undefined$1
 				? this
 				: typeof origin==='function'
-					? /*#__PURE__*/ Nullify(origin)
-					: /*#__PURE__*/ assign(/*#__PURE__*/ create(NULL), origin);
+					? /*#__PURE__*/Nullify(origin)
+					: /*#__PURE__*/assign(/*#__PURE__*/create$1(NULL), origin);
 		};
 		delete Null.name;
 		//try { delete Null.length; } catch (error) {}
@@ -122,7 +129,7 @@ const Pattern = (node         , scope      )       => {
 		case 'ObjectPattern':{// { Pattern }
 			let index         = 0;
 			for ( const { properties } = node, { length } = properties; index<length; ++index ) {
-				const property = properties[index];
+				const property = properties[index] ;
 				switch ( property.type ) {
 					case 'Property':// { key: valuePattern }
 						Pattern(property.value, scope);
@@ -164,10 +171,10 @@ const VariableDeclaration = (node                     , parents                 
 	const isScope = node.kind==='var' ? isVarScope : isAnyScope;
 	let index         = parents.length;
 	while ( index ) {
-		const parent = parents[--index];
+		const parent = parents[--index] ;
 		if ( isScope(parent.type) ) {
 			let index         = 0;
-			for ( const { declarations } = node, { length } = declarations; index<length; ++index ) { Pattern(declarations[index].id, parent); }
+			for ( const { declarations } = node, { length } = declarations; index<length; ++index ) { Pattern(declarations[index] .id, parent); }
 			break;
 		}
 	}
@@ -175,7 +182,7 @@ const VariableDeclaration = (node                     , parents                 
 
 const Function = (scope           )       => {
 	let index         = 0;
-	for ( const { params } = scope, { length } = params; index<length; ++index ) { Pattern(params[index], scope); }
+	for ( const { params } = scope, { length } = params; index<length; ++index ) { Pattern(params[index] , scope); }
 	const { id } = scope;
 	id && scope_add(scope, id);
 };
@@ -184,7 +191,7 @@ const FunctionDeclaration = (node           , parents                 )       =>
 	if ( id ) {
 		let index         = parents.length - 1;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index] ;
 			if ( isVarScope(parent.type) ) {
 				scope_add(parent, id);
 				break;
@@ -203,7 +210,7 @@ const ClassDeclaration = (node        , parents                 )       => {
 	if ( id ) {
 		let index         = parents.length - 1;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index] ;
 			if ( isAnyScope(parent.type) ) {
 				scope_add(parent, id);
 				break;
@@ -221,7 +228,7 @@ const TryStatement = ({ handler }              )       => {
 };
 
 const Import$Specifier = ({ local }                  , parents                 )       => {
-	scope_add(parents[0], local);
+	scope_add(parents[0] , local);
 };
 
 const DECLARATION_VISITORS = /*#__PURE__*/freeze(Null({
@@ -250,7 +257,7 @@ const ReferenceVisitors = (globals                                              
 		let index         = parents.length;
 		if ( name==='arguments' ) {
 			while ( index ) {
-				const parent = parents[--index];
+				const parent = parents[--index] ;
 				if ( scope_has(parent, name) ) { return; }
 				const { type } = parent;
 				if ( type==='FunctionExpression' || type==='FunctionDeclaration' ) { return; }
@@ -258,7 +265,7 @@ const ReferenceVisitors = (globals                                              
 		}
 		else {
 			while ( index ) {
-				if ( scope_has(parents[--index], name) ) { return; }
+				if ( scope_has(parents[--index] , name) ) { return; }
 			}
 		}
 		add(globals, node, name);
@@ -267,9 +274,9 @@ const ReferenceVisitors = (globals                                              
 	const ThisExpression = (node                , parents                 )       => {
 		let index         = parents.length;
 		while ( index ) {
-			const parent = parents[--index];
+			const parent = parents[--index] ;
 			const { type } = parent;
-			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='FieldDefinition' && parents[index+1]===( parent                    ).value ) { return; }
+			if ( type==='FunctionExpression' || type==='FunctionDeclaration' || type==='PropertyDefinition' && parents[index+1]===( parent                       ).value ) { return; }
 		}
 		add(globals, node, 'this');
 	};
@@ -282,24 +289,24 @@ const ReferenceVisitors = (globals                                              
 	
 };
 
-const create$1 = Object.create;
+const create = Object.create;
 
-const toStringTag = typeof Symbol!=='undefined' ? Symbol.toStringTag : undefined;
+const toStringTag = typeof Symbol!=='undefined' ? Symbol.toStringTag : undefined$1;
 
 const defineProperty = Object.defineProperty;
 
-const assign = typeof Object!=='undefined' ? Object.assign : undefined;
+const assign = Object.assign;
 
 const Default = (
 	/*! j-globals: default (internal) */
 	function Default (exports, addOnOrigin) {
 		return /*#__PURE__*/ function Module (exports, addOnOrigin) {
-			if ( !addOnOrigin ) { addOnOrigin = exports; exports = create$1(NULL); }
+			if ( !addOnOrigin ) { addOnOrigin = exports; exports = create(NULL); }
 			if ( assign ) { assign(exports, addOnOrigin); }
-			else { for ( var key in addOnOrigin ) { if ( getOwnPropertyDescriptor(addOnOrigin, key) ) { exports[key] = addOnOrigin[key]; } } }
+			else { for ( var key in addOnOrigin ) { if ( hasOwn(addOnOrigin, key) ) { exports[key] = addOnOrigin[key]; } } }
 			exports.default = exports;
 			if ( toStringTag ) {
-				var descriptor = create$1(NULL);
+				var descriptor = create(NULL);
 				descriptor.value = 'Module';
 				defineProperty(exports, toStringTag, descriptor);
 			}
@@ -312,8 +319,8 @@ const Default = (
 
 const { ancestor, base }                                              = require('acorn-walk');
 
-base.FieldDefinition ?? ( base.FieldDefinition = (
-	node                           ,
+base.PropertyDefinition ?? ( base.PropertyDefinition = (
+	node                              ,
 	state_or_parents                        ,
 	_continue   
 		                     
