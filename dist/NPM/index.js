@@ -291,7 +291,7 @@ const ReferenceVisitors = (globals                                              
 
 const create = Object.create;
 
-const toStringTag = typeof Symbol!=='undefined' ? Symbol.toStringTag : undefined$1;
+const toStringTag = typeof Symbol==='undefined' ? undefined$1 : Symbol.toStringTag;
 
 const defineProperty = Object.defineProperty;
 
