@@ -1,13 +1,25 @@
 {
 	"compilerOptions": {
-		"target": "ESNext",
-		"baseUrl": "..",
+		"target": "ESNext"
+		,
+		"baseUrl": ".."
+		,
 		"paths": {
 			"acorn-walk": [ "/node_modules/acorn-walk/dist/walk.d.ts" ]
-		},
-		"strict": true,
-		"noImplicitReturns": true,
-		"noUnusedLocals": true,
+		}
+		,
+		"strict": true
+		,
+		"noImplicitReturns": true
+		,
+		"noUnusedLocals": true
+		,
 		"noUncheckedIndexedAccess": true
+		,
+		"noImplicitOverride": true
+		,
+		"isolatedModules": true
+		,
+		"exactOptionalPropertyTypes": true
 	}
 }

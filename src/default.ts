@@ -1,47 +1,16 @@
 import version from './version?text';
 
-import Map from '.Map';
-import push from '.Array.prototype.push';
-import apply from '.Reflect.apply';
-
-import { scope_new, scope_low, scope_old } from './scope';
+import { globals, scope_new, scope_old } from './scope';
 import DECLARATION_VISITORS from './DECLARATION_VISITORS';
-import ReferenceVisitors from './ReferenceVisitors';
+import REFERENCE_VISITORS from './REFERENCE_VISITORS';
 
-const { ancestor, base } :typeof import('acorn-walk') & { base :any } = require('acorn-walk');
+const { ancestor } :typeof import('acorn-walk') = require('acorn-walk');
 
-base.PropertyDefinition ?? ( base.PropertyDefinition = (
-	node :Readonly<PropertyDefinition>,
-	state_or_parents :Readonly<any | Node[]>,
-	_continue :(
-		node :Readonly<Node>,
-		state :Readonly<any | Node[]>,
-		override :string
-	) => void
-) :void => {
-	node.computed && _continue(node.key, state_or_parents, 'Expression');
-	const { value } = node;
-	value && _continue(value, state_or_parents, 'Expression');
-} );
-
-class Globals extends Map<string, ( Identifier | ThisExpression )[]> {
-	names (this :Globals) :string[] {
-		return [ ...this.keys() ];
-	}
-	nodes (this :Globals) {
-		const nodes :( Identifier | ThisExpression )[] = [];
-		for ( const value of this.values() ) { apply(push, nodes, value); }
-		return nodes;
-	}
-}
-
-const findGlobals = (AST :Node & { sourceType? :'module' | 'script' }) :Globals => {
-	scope_new();
+const findGlobals = (AST :Node) => {
+	scope_new(AST);
 	try {
-		const globals :Globals = new Globals;
 		ancestor(AST, DECLARATION_VISITORS);
-		ancestor(AST, ReferenceVisitors(globals));
-		AST.type==='Program' && AST.sourceType!=='module' && scope_low(AST, globals);
+		ancestor(AST, REFERENCE_VISITORS);
 		return globals;
 	}
 	finally { scope_old(); }
@@ -50,4 +19,4 @@ const findGlobals = (AST :Node & { sourceType? :'module' | 'script' }) :Globals 
 import Default from '.default';
 export default Default(findGlobals, { version });
 
-import type { Node, PropertyDefinition, Identifier, ThisExpression } from './Node';
+import type { Node } from './Node';

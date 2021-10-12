@@ -41,13 +41,13 @@ export type AssignmentPattern = ReadonlyObject<{
 export type Pattern = Identifier | ObjectPattern | ArrayPattern | RestElement | AssignmentPattern | Unrecognized;
 
 export type Function$ = ReadonlyObject<{
-	type :'FunctionDeclaration' | 'Function',
+	type :'FunctionDeclaration' | 'FunctionExpression' | 'ArrowFunctionExpression',
 	id :Identifier | null,
 	params :ReadonlyArray<Pattern>,
 }>;
 
 export type Class$ = ReadonlyObject<{
-	type :'ClassDeclaration' | 'Class',
+	type :'ClassDeclaration' | 'ClassExpression',
 	id :Identifier | null,
 }>;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-require('@ltd/j-dev')(__dirname+'/..')(async ({ build, 龙腾道, get, map }) => {
+require('j-dev')(__dirname+'/..')(async ({ build, 龙腾道, get, map }) => {
 	
 	await build({
 		name: 'acorn-globals',
@@ -14,7 +14,7 @@ require('@ltd/j-dev')(__dirname+'/..')(async ({ build, 龙腾道, get, map }) =>
 				'Global references detection tool adapted from acorn-globals. Belong to "Plan J".／'+
 				'改编自 acorn-globals 的全局引用检测工具。从属于“简计划”。',
 			dependencies: {
-				'acorn-walk': '8.0.2',
+				'acorn-walk': '8.2.0',
 			},
 		},
 		LICENSE_: true,

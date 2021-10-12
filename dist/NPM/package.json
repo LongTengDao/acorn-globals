@@ -1,7 +1,7 @@
 {
 	"name": "@ltd/acorn-globals",
 	"description": "Global references detection tool adapted from acorn-globals. Belong to \"Plan J\".／改编自 acorn-globals 的全局引用检测工具。从属于“简计划”。",
-	"version": "2.0.0",
+	"version": "3.0.0",
 	"license": "LGPL-3.0",
 	"author": "龙腾道 <LongTengDao@LongTengDao.com> (www.LongTengDao.com)",
 	"bugs": "https://GitHub.com/LongTengDao/acorn-globals/issues",
@@ -10,6 +10,6 @@
 		"url": "https://GitHub.com/LongTengDao/acorn-globals.git"
 	},
 	"dependencies": {
-		"acorn-walk": "8.0.2"
+		"acorn-walk": "8.2.0"
 	}
 }
